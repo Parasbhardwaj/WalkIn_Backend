@@ -1,22 +1,25 @@
 const JWT = require("jsonwebtoken");
-const {secretKey} = require("../../config");
+const { accessSecretKey, refreshSecretKey } = require("../../config");
 
 const jwtAuth = {};
 
-jwtAuth.createToken = async (user) => {
+jwtAuth.createAccessToken = async (user) => {
   try {
-    console.log(secretKey);
-    const token = JWT.sign({ email: user.email }, secretKey, {
+    const payload = {
+      email: user.email,
+      iss: "parasbhardwaj",
+    };
+    const options = {
       allowInsecureKeySizes: true,
       expiresIn: 300,
       issuer: "parasbhardwaj",
-      audience: user.email
-    });
-
+      audience: user.email,
+    };
+    const token = JWT.sign(payload, accessSecretKey, options);
     return token;
   } catch (err) {
-    return err
+    throw err;
   }
 };
 
-module.exports = jwtAuth
+module.exports = jwtAuth;

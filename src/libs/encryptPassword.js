@@ -10,4 +10,13 @@ encryptPasssword = async (password) => {
   }
 }
 
-module.exports = encryptPasssword
+checkPassword = async (inputPassword,savedPassword) =>{
+  try {
+    const isPasswordCorrect = await bcrypt.compare(inputPassword, savedPassword)
+    return isPasswordCorrect;
+  } catch (error) {
+    throw error;
+  }
+}
+
+module.exports = {encryptPasssword,checkPassword}
