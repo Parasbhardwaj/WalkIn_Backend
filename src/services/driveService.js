@@ -20,7 +20,6 @@ driveService.createDrive = async (driveData) => {
 driveService.getAllDrives = async ()=>{
   try {
     let data = await Drive.find();
-    console.log("get drives",data);
     if (data) {
       return {
         success: true,
@@ -28,9 +27,8 @@ driveService.getAllDrives = async ()=>{
         data,
       };
     }
-  } catch (e) {
-    console.log(e);
-    return e
+  } catch (error) {
+    throw error
   }
 }
 

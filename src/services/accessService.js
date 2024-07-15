@@ -5,7 +5,7 @@ const {
   registerUserSchemaValidation,
   loginUserSchemaValidation,
 } = require("../libs/schemaValidation");
-const {encryptPasssword, checkPassword} = require("../libs/encryptPassword");
+const { encryptPasssword, checkPassword } = require("../libs/encryptPassword");
 
 const accessService = {};
 
@@ -43,23 +43,42 @@ accessService.registerUser = async (userData) => {
 accessService.login = async (userData) => {
   try {
     const result = await loginUserSchemaValidation.validateAsync(userData);
-    console.log("result",result);
+    console.log("result", result);
 
-    const user = await User.findOne({email: result.email})
+    const user = await User.findOne({ email: result.email });
 
-    if(!user) throw createError.NotFound("User not registered.")
+    if (!user) throw createError.NotFound("User not registered.");
 
-    const isPasswordMatch = await checkPassword(result.password, user.password)
-    if(!isPasswordMatch) throw createError.Unauthorized("Username/Password not valid.")
-    let accessToken = await jwtAuth.createAccessToken(userData);
+    const isPasswordMatch = await checkPassword(result.password, user.password);
+    if (!isPasswordMatch)
+      throw createError.Unauthorized("Username/Password not valid.");
+    let accessToken = await jwtAuth.generateAccessToken(result);
+    let refreshToken = await jwtAuth.generateRefreshToken(result);
     return {
       accessToken: accessToken,
+      refreshToken: refreshToken
     };
   } catch (error) {
-    console.log("err",error);
-    if (error.isJoi === true) throw createError.BadRequest("Invalid Username/Password")
+    console.log("err", error);
+    if (error.isJoi === true)
+      throw createError.BadRequest("Invalid Username/Password");
     throw error;
   }
 };
+
+accessService.refreshTokens = async (refresh_Token) =>{
+  try {
+    if (!refresh_Token) throw createError.BadRequest()
+    const userEmail = await jwtAuth.validateRefreshToken(refresh_Token)
+    const accessToken = await jwtAuth.generateAccessToken({email:userEmail})
+    const refreshToken = await jwtAuth.generateRefreshToken({email:userEmail})
+    return {
+      accessToken: accessToken,
+      refreshToken: refreshToken
+    };
+  } catch (error) {
+    throw error
+  }
+}
 
 module.exports = accessService;

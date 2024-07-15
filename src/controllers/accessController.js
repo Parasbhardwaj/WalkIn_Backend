@@ -19,4 +19,17 @@ accessController.login = async (req, res, next) => {
   }
 };
 
+accessController.refreshTokens = async (req, res, next) => {
+  try {
+    const reqData = req.body
+    const refreshToken = reqData.refreshToken
+    console.log("refreshToken in controller",refreshToken);
+    const result = await accessService.refreshTokens(refreshToken);
+    res.send(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 module.exports = accessController;
