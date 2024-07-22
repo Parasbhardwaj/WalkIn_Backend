@@ -31,4 +31,18 @@ driveController.getDrive = async (req, res, next) => {
   res.send(result);
 };
 
+driveController.uploadFiles = async (req, res, next) => {
+  try {
+    console.log("controller of upload");
+    // console.log(req);
+    console.log("body",req.body);
+    console.log("files",req.files);
+    const allFiles = req.files
+    const result = await driveService.uploadFiles(allFiles);
+    res.send(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = driveController;
