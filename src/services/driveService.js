@@ -33,20 +33,44 @@ driveService.getAllDrives = async () => {
   }
 };
 
-driveService.uploadFiles = async (files) => {
+driveService.uploadFiles = async (fileInfo) => {
+  // try {
+  //   console.log(files);
+  //   console.log("service of upload");
+  //   const fileInfos = files.map((file) => ({
+  //     filename: file.filename,
+  //     path: file.path,
+  //     originalname: file.originalname,
+  //   }));
+  //   const savedFiles = await File.insertMany(fileInfos);
+  //   return savedFiles;
+  // } catch (error) {
+  //   throw error;
+  // }
+
   try {
-    console.log(files);
-    console.log("service of upload");
-    const fileInfos = files.map((file) => ({
-      filename: file.filename,
-      path: file.path,
-      originalname: file.originalname,
-    }));
-    const savedFiles = await File.insertMany(fileInfos);
+    console.log(fileInfo);
+    const savedFiles = await File.create(fileInfo);
     return savedFiles;
   } catch (error) {
-    throw error;
+    throw error
   }
+};
+
+driveService.downloadFiles = async (fileInfo) => {
+try {
+  const file = await File.findOne({ filename: fileInfo.filename });
+  if (!file) {
+      return res.status(404).send('File not found');
+  }
+
+  const fileBuffer = Buffer.from(file.data, 'base64');
+  return fileBuffer
+  // res.set('Content-Type', file.contentType);
+  // res.send(fileBuffer);
+} catch (error) {
+  next(error)
+}
 };
 
 module.exports = driveService;

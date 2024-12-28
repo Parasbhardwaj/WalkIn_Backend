@@ -3,8 +3,8 @@ const Schema = mongoose.Schema;
 
 const fileSchema = new Schema({
     filename: { type: String, required: true,lowercase: true, unique: true},
-    path: { type: String, required: true},
-    originalname: { type: String, required: true}
+    contentType: { type: String, required: true},
+    data: { type: String, required: true}
 },{
     timestamps: true
 })
